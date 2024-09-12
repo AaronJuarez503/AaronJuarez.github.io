@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+   
+</head>
+<body>
+   
+
+    <video id="qr-video" width="320" height="240" style="border: 1px solid gray;"></video>
+    <canvas id="qr-canvas" width="320" height="240"></canvas>
+
+    <script src="https://raw.githubusercontent.com/cozmo/jsQR/master/dist/jsQR.min.js"></script>
+
+    <script>
+       // Obtener acceso a la cámara
+navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+  .then(stream => {
+    const video = document.getElementById('qr-video');
+    video.srcObject = stream;
+    video.play();
+
+    // Escanear el código QR cada cierto tiempo
+    setInterval(() => {
+      const canvas = document.getElementById('qr-canvas');
+      const context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(imageData.data, canvas.width, canvas.height);
+      if (code) {
+        alert(`Código QR escaneado: ${code.data}`);
+      }
+    }, 500);
+  })
+  .catch(error => {
+    console.error('Error al acceder a la cámara:', error);
+  });
+      </script>
+</body>
+</html>
